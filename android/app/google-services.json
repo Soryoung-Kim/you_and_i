@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "435987873582",
+    "project_id": "youandi-8f970",
+    "storage_bucket": "youandi-8f970.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435987873582:android:24f282bb862475e27f44bf",
+        "android_client_info": {
+          "package_name": "com.ub.uandi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbzikgHb6_r1B8X4ClgQrGGMkfAoYoXYo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
