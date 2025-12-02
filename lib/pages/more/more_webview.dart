@@ -12,6 +12,10 @@ class MoreWebview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(url ?? ''));
+
 
     return Scaffold(
         appBar: AppBar(
@@ -33,9 +37,8 @@ class MoreWebview extends StatelessWidget {
                 color: Colors.black,
               )),
         ),
-        body:  WebView(
-          initialUrl: url.toString(),
-          javascriptMode: JavascriptMode.unrestricted,
+        body: WebViewWidget(
+          controller: controller,
         )
     );
   }
