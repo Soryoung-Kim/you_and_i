@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import 'package:share/share.dart' as pubshare;
+import 'package:share_plus/share_plus.dart' as pubshare;
 import 'package:url_launcher/url_launcher.dart';
 class Share extends StatelessWidget {
   const Share({Key? key}) : super(key: key);

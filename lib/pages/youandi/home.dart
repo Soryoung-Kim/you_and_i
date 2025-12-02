@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:you_and_i/controller/main_controller.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:you_and_i/db/myinfo_db_controller.dart';
