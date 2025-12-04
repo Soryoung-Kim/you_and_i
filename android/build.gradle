@@ -17,13 +17,13 @@ subprojects { project ->
     project.tasks.matching { it.name.startsWith('lint') }.configureEach {
         enabled = false
     }
-}
 
-project.tasks.withType(Test).configureEach {
-    // Third-party Android unit tests (e.g., image picker/image resizer fixtures)
-    // fail in CI due to missing host-side resources. Disable them globally to
-    // allow application builds to proceed.
-    enabled = false
+    project.tasks.withType(Test).configureEach {
+        // Third-party Android unit tests (e.g., image picker/image resizer fixtures)
+        // fail in CI due to missing host-side resources. Disable them globally to
+        // allow application builds to proceed.
+        enabled = false
+    }
 }
 
 tasks.register("clean", Delete) {
