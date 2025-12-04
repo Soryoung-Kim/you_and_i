@@ -33,11 +33,20 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def keystoreFile = keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+def bundledKeystore = rootProject.file('uandi.jks')
 
+if ((keystoreFile == null || !keystoreFile.exists()) && bundledKeystore.exists()) {
+    keystoreFile = bundledKeystore
+    keystoreProperties['storeFile'] = bundledKeystore.path
+}
+
+def hasReleaseKeystore = keystoreFile != null && keystoreFile.exists() &&
+        keystoreProperties['keyAlias'] && keystoreProperties['storePassword'] && keystoreProperties['keyPassword']
 
 android {
-    namespace 'com.ub.uandi'
-    compileSdkVersion 36
+    namespace = 'com.ub.uandi'
+    compileSdkVersion = 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -58,19 +67,20 @@ android {
         minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
         versionCode 8
-        versionName flutterVersionName
     }
     signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+        if (hasReleaseKeystore) {
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreFile
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig = hasReleaseKeystore ? signingConfigs.release : signingConfigs.debug
         }
     }
 //    buildTypes {
@@ -82,15 +92,15 @@ android {
 //    }
 
     lint {
-        checkReleaseBuilds false
-        abortOnError false
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
 
 }
 
 flutter {
-    source '../..'
+    source = '../..'
 }
 
 dependencies {

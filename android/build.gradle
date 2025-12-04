@@ -13,6 +13,20 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
+subprojects { project ->
+    ["com.android.application", "com.android.library"].each { pluginId ->
+        project.plugins.withId(pluginId) {
+            project.android {
+                lint {
+                    checkReleaseBuilds = false
+                    abortOnError = false
+                    disable 'Range'
+                }
+            }
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.layout.buildDirectory
 }

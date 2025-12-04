@@ -102,6 +102,7 @@ class _SplashPermissionState extends State<SplashPermission> {
   Future<bool> _storagePermision() async {
     var status = await Permission.storage.request();
     print('저장장소');
+    print(status);
     if (status.isGranted) {
       return true;
     }
@@ -110,12 +111,24 @@ class _SplashPermissionState extends State<SplashPermission> {
   }
 
   bool _handleDenied(PermissionStatus status, String message) {
+    final shouldShowSettingsCTA =
+        status.isPermanentlyDenied || status.isDenied || status.isRestricted;
+
     if (status.isPermanentlyDenied) {
-      Get.snackbar('권한 필요', '$message\n설정에서 권한을 변경해주세요.');
+      Get.snackbar('권한 필요', '$message\n설정에서 권한을 변경해주세요.',
+          mainButton: TextButton(
+            onPressed: openAppSettings,
+            child: const Text('설정 열기'),
+          ));
       openAppSettings();
     } else if (status.isDenied || status.isRestricted || status.isLimited) {
-      print(status);
-      Get.snackbar('권한 필요', message);
+      Get.snackbar('권한 필요', message,
+          mainButton: shouldShowSettingsCTA
+              ? TextButton(
+            onPressed: openAppSettings,
+            child: const Text('설정 열기'),
+          )
+              : null);
     }
 
     return false;
