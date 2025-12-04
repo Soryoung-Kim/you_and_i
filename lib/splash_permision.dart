@@ -22,11 +22,16 @@ class _SplashPermissionState extends State<SplashPermission> {
     super.initState();
   }
 
-  Future<void> requestPermission() async {
+  Future<bool> requestPermission() async {
+
+    final storageGranted = await _storagePermision();
+    final contactGranted = await _contactPermision();
+    final locationGranted = await _locationPermision();
+
     // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainRoot()));
-    await _storagePermision();
-    await _contactPermision();
-    await _locationPermision();
+    //await _storagePermision();
+    //await _contactPermision();
+    //await _locationPermision();
 
     // final prefs = await SharedPreferences.getInstance();
     // if (!(prefs.getBool('isFirst') ?? false)) {
@@ -35,45 +40,51 @@ class _SplashPermissionState extends State<SplashPermission> {
     //   Get.offAllNamed('/YouAndI');
     //
     // }
+
+    return storageGranted && contactGranted && locationGranted;
   }
 
-  Future<void> _locationPermision() async {
+  Future<bool> _locationPermision() async {
     var status = await Permission.location.request();
     if (status.isDenied) {
       return Future.error('Location permissions are denied ');
     }
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+    if (status.isGranted) {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          // Permissions are denied, next time you could try
+          // requesting permissions again (this is also where
+          // Android's shouldShowRequestPermissionRationale
+          // returned true. According to Android guidelines
+          // your App should show an explanatory UI now.
+          //return Future.error('Location permissions are denied');
+          permission = await Geolocator.requestPermission();
+        }
+        return permission == LocationPermission.always ||
+            permission == LocationPermission.whileInUse;
       }
-    }
-  }
 
-  Future<void> _contactPermision() async {
-    PermissionStatus permission = await Permission.contacts.status;
+      return _handleDenied(status, '위치 접근 권한을 허용해주세요.');
+    }
+
+  Future<bool> _contactPermision() async {
     var status = await Permission.contacts.request();
     print(status);
-    if (status.isDenied) {
-      return Future.error('Contact permissions are denied ');
-    }else{
 
+    if (status.isGranted) {
+        return true;
     }
+
+      return _handleDenied(status, '연락처 접근 권한을 허용해주세요.');
   }
 
-  Future<void> _askPermissions(String routeName) async {
+  Future<bool> _askPermissions(String routeName) async {
     PermissionStatus permissionStatus = await _getContactPermission();
     if (permissionStatus == PermissionStatus.granted) {
-
+      return true;
     } else {
-      return Future.error('Contact permissions are denied ');
+      return _handleDenied(permissionStatus, '연락처 접근 권한을 허용해주세요.');
     }
   }
 
@@ -88,11 +99,26 @@ class _SplashPermissionState extends State<SplashPermission> {
     }
   }
 
-  Future<void> _storagePermision() async {
+  Future<bool> _storagePermision() async {
     var status = await Permission.storage.request();
-    if (status.isDenied) {
-      return Future.error('Storage permissions are denied ');
+    print('저장장소');
+    if (status.isGranted) {
+      return true;
     }
+
+    return _handleDenied(status, '저장소 접근 권한을 허용해주세요.');
+  }
+
+  bool _handleDenied(PermissionStatus status, String message) {
+    if (status.isPermanentlyDenied) {
+      Get.snackbar('권한 필요', '$message\n설정에서 권한을 변경해주세요.');
+      openAppSettings();
+    } else if (status.isDenied || status.isRestricted || status.isLimited) {
+      print(status);
+      Get.snackbar('권한 필요', message);
+    }
+
+    return false;
   }
 
   @override
@@ -121,8 +147,10 @@ class _SplashPermissionState extends State<SplashPermission> {
                       foregroundColor: Theme.of(context).primaryColor, // foreground
                     ),
                     onPressed: () async {
-                      await requestPermission();
-
+                      final granted = await requestPermission();
+                      if (!granted) {
+                        return;
+                      }
 
                       final prefs = await SharedPreferences.getInstance();
                       final isT = prefs.getBool('isTutorial') ?? false;
