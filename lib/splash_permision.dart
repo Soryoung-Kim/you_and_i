@@ -25,8 +25,8 @@ class _SplashPermissionState extends State<SplashPermission> {
 
   Future<bool> requestPermission() async {
 
-    final storageGranted = await _storagePermision();
     final contactGranted = await _contactPermision();
+    final storageGranted = await _storagePermision();
     final locationGranted = await _locationPermision();
 
     // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainRoot()));
@@ -42,7 +42,7 @@ class _SplashPermissionState extends State<SplashPermission> {
     //
     // }
 
-    return storageGranted && contactGranted && locationGranted;
+    return contactGranted && storageGranted && locationGranted;
   }
 
   Future<bool> _locationPermision() async {
@@ -71,6 +71,7 @@ class _SplashPermissionState extends State<SplashPermission> {
 
   Future<bool> _contactPermision() async {
     var status = await Permission.contacts.request();
+    print('연락처');
     print(status);
 
     if (status.isGranted) {
@@ -101,35 +102,45 @@ class _SplashPermissionState extends State<SplashPermission> {
   }
 
   Future<bool> _storagePermision() async {
+    // 기본 저장소 권한 요청
+    var status = await Permission.storage.request();
+    print('저장소');
+    print(status);
+
+    if (status.isGranted) {
+      return true;
+    }
 
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
       final int androidVersion = androidInfo.version.sdkInt ?? 0;
 
       if (androidVersion >= 33) {
-        // Android 13 이상
-        final statuses = await [
-          Permission.photos,
-          Permission.videos,
-          // 필요 시 Permission.audio 추가
-        ].request();
-        return statuses.values.every((status) =>
-        status == PermissionStatus.granted);
-      } else {
-        var status = await Permission.storage.request();
-        if (status.isGranted) {
-          return true;
+        if (await Permission.photos.status.isDenied ||
+            await Permission.videos.status.isDenied) {
+          Map<Permission, PermissionStatus> statuses = await [
+            Permission.photos,
+            Permission.videos,
+          ].request();
+
+          print('photos');
+          print(statuses[Permission.photos]);
+
+          print('videos');
+          print(statuses[Permission.videos]);
+
+          if (statuses[Permission.photos] == PermissionStatus.granted ||
+              statuses[Permission.videos] == PermissionStatus.granted) {
+            return true;
+          } else {
+            PermissionStatus representativeStatus  = await Permission.photos.request();
+            return _handleDenied(representativeStatus , '저장소 권한을 허용해주세요.');
+          }
         }
-        return _handleDenied(status, '저장소 접근 권한을 허용해주세요.');
       }
-    } else {
-      var status = await Permission.storage.request();
-      if (status.isGranted) {
-        return true;
-      }
-      return _handleDenied(status, '저장소 접근 권한을 허용해주세요.');
     }
 
+    return _handleDenied(status, '저장소 권한을 허용해주세요.');
   }
 
   bool _handleDenied(PermissionStatus status, String message) {
