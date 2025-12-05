@@ -71,8 +71,6 @@ class _SplashPermissionState extends State<SplashPermission> {
 
   Future<bool> _contactPermision() async {
     var status = await Permission.contacts.request();
-    print('연락처');
-    print(status);
 
     if (status.isGranted) {
         return true;
@@ -104,8 +102,6 @@ class _SplashPermissionState extends State<SplashPermission> {
   Future<bool> _storagePermision() async {
     // 기본 저장소 권한 요청
     var status = await Permission.storage.request();
-    print('저장소');
-    print(status);
 
     if (status.isGranted) {
       return true;
@@ -122,12 +118,6 @@ class _SplashPermissionState extends State<SplashPermission> {
             Permission.photos,
             Permission.videos,
           ].request();
-
-          print('photos');
-          print(statuses[Permission.photos]);
-
-          print('videos');
-          print(statuses[Permission.videos]);
 
           if (statuses[Permission.photos] == PermissionStatus.granted ||
               statuses[Permission.videos] == PermissionStatus.granted) {
