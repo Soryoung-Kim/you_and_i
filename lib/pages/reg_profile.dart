@@ -73,8 +73,7 @@ class _RegProfileState extends State<RegProfile> {
 
               Image(
                 color: Colors.black.withOpacity(0),
-                image: AssetImage(
-                    'assets/images/img_profile_bg.png'),
+                image: AssetImage( 'assets/images/img_profile_bg.png'),
                  width: double.infinity,
                 fit: BoxFit.fill,
               ),

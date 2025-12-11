@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:graphview/GraphView.dart' as Grap;
+
 class NetworkPictureController extends GetxController {
   var list = [];
   var nodeMap = {};
@@ -46,7 +47,7 @@ class NetworkPictureController extends GetxController {
 
   Future<void> initContact() async {
 
-    print('로딩시작*******************************************************************');
+    print('연락처 로딩시작*******************************************************************');
 
     // 권한 요청 (이미 다른 곳에서 처리하면 생략 가능)
     final granted = await FlutterContacts.requestPermission();
@@ -76,7 +77,7 @@ class NetworkPictureController extends GetxController {
         !GetUtils.isNullOrBlank(e['phone'])!)
       .toList();
 
-    print('로딩완료*******************************************************************${list.length}');
+    print('연락처 로딩완료*******************************************************************${list.length}');
   }
 
   Widget getContaniner(BuildContext context) {
@@ -183,8 +184,7 @@ class NetworkPictureController extends GetxController {
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                   fit: BoxFit.fill,
-                                  image: AssetImage(
-                                      'assets/images/img_profile_user.png')))),
+                                  image: AssetImage('assets/images/img_profile_user.png')))),
                       // Icon(Icons.account_box_outlined , size: 70,color: Colors.white,),
                       alignment: Alignment.center,
                     ),

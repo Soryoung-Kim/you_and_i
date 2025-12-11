@@ -118,19 +118,19 @@ class _SplashPermissionState extends State<SplashPermission> {
             Permission.photos,
             Permission.videos,
           ].request();
-
           if (statuses[Permission.photos] == PermissionStatus.granted ||
               statuses[Permission.videos] == PermissionStatus.granted) {
-            return true;
           } else {
             PermissionStatus representativeStatus  = await Permission.photos.request();
-            return _handleDenied(representativeStatus , '저장소 권한을 허용해주세요.');
+            return _handleDenied(representativeStatus , '저장소 권한을 허용해주세요.1');
           }
+        } else {
+          return true;
         }
       }
     }
 
-    return _handleDenied(status, '저장소 권한을 허용해주세요.');
+    return _handleDenied(status, '저장소 권한을 허용해주세요.2');
   }
 
   bool _handleDenied(PermissionStatus status, String message) {

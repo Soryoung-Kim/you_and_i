@@ -81,7 +81,7 @@ class DataChannelController {
   UserType? _userType;
 
   String? _url = dotenv.env['RTC_SIGNAL_SERVER'];
-  // String _url = 'ws://192.168.0.20:3337';
+  // String _url = 'ws://192.168.0.20:3337';  ;
   IO.Socket? socket;
   RTCPeerConnection? _peerConnection;
   RTCDataChannel? _rtcDataChannel;
@@ -104,7 +104,6 @@ class DataChannelController {
             .enableForceNewConnection()
             .build());
     _startSocketEvent();
-
     // RTCDataChannelMessage.fromBinary()
   }
 
@@ -148,8 +147,7 @@ class DataChannelController {
       // 'sdpMid': sdpMid,
       // 'sdpMLineIndex': sdpMlineIndex
       if (onLog != null)
-        onLog!(
-            "candidate --> ${data['candidate']}, ${data['sdpMid']}, ${data['sdpMLineIndex']}");
+        onLog!( "candidate --> ${data['candidate']}, ${data['sdpMid']}, ${data['sdpMLineIndex']}");
       _tempCandidate!.add(RTCIceCandidate(
           data['candidate'], data['sdpMid'], data['sdpMLineIndex']));
       if (_peerConnection != null) {
@@ -251,8 +249,7 @@ class DataChannelController {
     }
 
     if (onLog != null)
-      onLog!(
-          'init _peerConnection state : ${_peerConnection!.connectionState.toString()}');
+      onLog!('init _peerConnection state : ${_peerConnection!.connectionState.toString()}');
   }
 
   createDataChannel() async {
