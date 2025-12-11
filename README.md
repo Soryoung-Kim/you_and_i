@@ -19,4 +19,6 @@ samples, guidance on mobile development, and a full API reference.
 
 If your matching server uses a TLS certificate issued for a hostname instead of the raw IP address, the client can skip
 hostname validation for specific hosts by setting `INSECURE_SSL_HOSTS` to a comma-separated list of allowed hostnames or IP
-addresses. This is primarily intended for controlled environments where a trusted certificate cannot be reissued.
+addresses. This is primarily intended for controlled environments where a trusted certificate cannot be reissued. Include all
+domain variants used by your services (for example, `www.woori42.net,woori42.net`) so that WebSocket connections that use
+those hosts can bypass validation when necessary.

@@ -87,7 +87,6 @@ class _AllowListedHttpOverrides extends HttpOverrides {
   }
 }
 
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
