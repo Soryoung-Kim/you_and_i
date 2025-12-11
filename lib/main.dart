@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
@@ -37,6 +39,7 @@ import 'package:you_and_i/util/search_address.dart';
 
 Future main() async {
   await DotEnv.dotenv.load(fileName: ".env");
+  _configureInsecureSsl();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     KakaoSdk.init(nativeAppKey: 'b8e23f7bb9505fa780fb42448ba73e06',
@@ -47,6 +50,41 @@ Future main() async {
       MyApp(),
     );
   });
+}
+
+void _configureInsecureSsl() {
+  final insecureHosts = DotEnv.dotenv.env['INSECURE_SSL_HOSTS'];
+
+  if (insecureHosts == null || insecureHosts.isEmpty) {
+    return;
+  }
+
+  final allowedHosts = insecureHosts
+      .split(',')
+      .map((host) => host.trim())
+      .where((host) => host.isNotEmpty)
+      .toSet();
+
+  if (allowedHosts.isEmpty) {
+    return;
+  }
+
+  HttpOverrides.global = _AllowListedHttpOverrides(allowedHosts);
+}
+
+class _AllowListedHttpOverrides extends HttpOverrides {
+  _AllowListedHttpOverrides(this.allowedHosts);
+
+  final Set<String> allowedHosts;
+
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    final client = super.createHttpClient(context);
+    client.badCertificateCallback = (cert, host, port) {
+      return allowedHosts.contains(host);
+    };
+    return client;
+  }
 }
 
 

@@ -15,4 +15,8 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-Update the `.env` file accordingly before launching the app so it can pick up the new database settings.
+### Allowing TLS against IP endpoints
+
+If your matching server uses a TLS certificate issued for a hostname instead of the raw IP address, the client can skip
+hostname validation for specific hosts by setting `INSECURE_SSL_HOSTS` to a comma-separated list of allowed hostnames or IP
+addresses. This is primarily intended for controlled environments where a trusted certificate cannot be reissued.
