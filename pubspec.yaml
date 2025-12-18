@@ -76,6 +76,7 @@ dependencies:
   vibration_web: ^1.6.8
   package_info_plus_web: ^2.0.0
   flutter_contacts: ^1.1.9+2
+  web_socket_channel: ^3.0.3
 
 
 dependency_overrides:

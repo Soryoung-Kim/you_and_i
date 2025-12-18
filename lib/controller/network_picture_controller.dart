@@ -20,13 +20,36 @@ class NetworkPictureController extends GetxController {
   }
 
   void initPosition(String key) async {
-    Future.delayed(Duration(seconds: 1), () async {
+    Future.delayed(const Duration(seconds: 1), () async {
+
       print('node0x:${nodeMap[key] }');
-      Grap.Node firstNode = nodeMap[key];
+
+      if (!nodeMap.containsKey(key)) {
+        return;
+      }
+
+      final Grap.Node firstNode = nodeMap[key];
+      final position = firstNode.position;
+
       print('node0x:${firstNode.position.dx }');
-      double width = MediaQuery.of(Get.context!).size.width/2;
+
+      print('node0x:${firstNode.position.dy }');
+
+      if (position.dx.isNaN || position.dy.isNaN ||
+          position.dx.isInfinite || position.dy.isInfinite) {
+        return;
+      }
+
+      final context = Get.context;
+
+      if (context == null) {
+        return;
+      }
+
+      final double width = MediaQuery.of(context).size.width / 2;
+
       transformationController.value = Matrix4.identity()
-        ..translate(-firstNode.position.dx+width, 0.0);
+        ..translate(-position.dx + width, 0.0);
       // Matrix4 scrollEnd = Matrix4.identity();
 
       //

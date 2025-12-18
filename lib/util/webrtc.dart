@@ -97,12 +97,27 @@ class DataChannelController {
       ) {
     _room = room;
     _userType = userType;
+
     socket = IO.io(
         _url,
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .enableForceNewConnection()
             .build());
+
+    /*
+    final socketPath = dotenv.env['RTC_SIGNAL_PATH'];
+    final options = IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .enableForceNewConnection();
+
+    if (socketPath != null && socketPath.isNotEmpty) {
+      options.setPath(socketPath);
+    }
+
+    socket = IO.io(_url, options.build());
+     */
+
     _startSocketEvent();
     // RTCDataChannelMessage.fromBinary()
   }

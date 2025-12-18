@@ -35,6 +35,8 @@ import 'package:path/path.dart' as p;
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 enum ConnectType { RTC, SOCKET }
 
 enum RtcFileType { Profile, Attach }
@@ -131,6 +133,7 @@ class MainController extends GetxController {
   }
 
   _startSocketEvent() {
+
     _socket = IO.io(
         _url,
         IO.OptionBuilder()
@@ -138,6 +141,20 @@ class MainController extends GetxController {
             .enableForceNewConnection()
             .build());
 
+    /*
+
+    final socketPath = dotenv.env['MATCHING_SERVER_PATH'];
+
+    final options = IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .enableForceNewConnection();
+
+    if (socketPath != null && socketPath.isNotEmpty) {
+      options.setPath(socketPath);
+    }
+
+    _socket = IO.io(_url, options.build());
+*/
     _socket!.onConnect((_) {
       //연결 가능
       // _messageTypeChange(MessageType.ABLE);
