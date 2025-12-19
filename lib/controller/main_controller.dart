@@ -114,6 +114,9 @@ class MainController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    print('start main controller');
+
     _startSocketEvent();
     _preferencesSetting();
     _startFindLocation();
@@ -121,18 +124,20 @@ class MainController extends GetxController {
     initContacts();
 
 
-    print('position : ${position}');
+    print('main position onInit : ${position}');
   }
 
   Future<void> _startFindLocation() async {
     position = await Geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-    print('position : ${position}');
+    print('position startFindLocation : ${position}');
     latitude(position!.latitude.toString());
     longitude(position!.longitude.toString());
   }
 
   _startSocketEvent() {
+
+    print('main _startSocketEvent');
 
     _socket = IO.io(
         _url,
@@ -141,24 +146,11 @@ class MainController extends GetxController {
             .enableForceNewConnection()
             .build());
 
-    /*
-
-    final socketPath = dotenv.env['MATCHING_SERVER_PATH'];
-
-    final options = IO.OptionBuilder()
-        .setTransports(['websocket'])
-        .enableForceNewConnection();
-
-    if (socketPath != null && socketPath.isNotEmpty) {
-      options.setPath(socketPath);
-    }
-
-    _socket = IO.io(_url, options.build());
-*/
     _socket!.onConnect((_) {
       //연결 가능
       // _messageTypeChange(MessageType.ABLE);
-      print('connect matching server');
+      print('main connect matching server');
+
 
       shareCount(friendDbController.list.length);
     });
@@ -166,11 +158,11 @@ class MainController extends GetxController {
       //에러
       // _messageTypeChange(MessageType.ERROR);
       print(error);
-      print('connect error matching server');
+      print('main connect error matching server');
     });
 
     _socket!.onDisconnect((_) {
-      print('disconnect matching server');
+      print('main disconnect matching server');
     });
 
     _socket!.on('matched', (data) async {
@@ -184,13 +176,14 @@ class MainController extends GetxController {
         await rtcReset(); // 매칭이되면 그전에 연결된것은 초기화하고 다시 가자.
         _roomId = data['room'];
         String type = data['type'];
-        print('matched $_roomId , $type');
+        print('main matched $_roomId , $type');
         _runRTC(_roomId!, type);
       });
 
     });
 
     _socket!.on('filere', (data) async {
+      print('main socket filere event');
       print(data);
     });
   }
@@ -335,8 +328,9 @@ class MainController extends GetxController {
   }
 
   void _preferencesSetting() async {
-    final prefs = await SharedPreferences.getInstance();
+    print('main _preferencesSetting');
 
+    final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isTutorial', true);
 
     // 처음 실행 한 유저
@@ -423,71 +417,72 @@ class MainController extends GetxController {
 
     // });
     return;
-    _dataChannelController!.onDataChannelConnected = (dataChannel) async {
-      await hideProgress();
-      print('data channel connected!');
-      if (_rctUserType == UserType.watcher) {
-        _dataChannelController!.sendMessage(_rtcCmdReady);
-        // dataChannelReady(true);
-        _sendProfile();
-      }
-      _dataChannelController!.sendMessage('hi!!!!! bang ga bang ga. ');
-    };
+    
+    // _dataChannelController!.onDataChannelConnected = (dataChannel) async {
+    //   await hideProgress();
+    //   print('data channel connected!');
+    //   if (_rctUserType == UserType.watcher) {
+    //     _dataChannelController!.sendMessage(_rtcCmdReady);
+    //     // dataChannelReady(true);
+    //     _sendProfile();
+    //   }
+    //   _dataChannelController!.sendMessage('hi!!!!! bang ga bang ga. ');
+    // };
 
-    _dataChannelController!.onTimeout = (peerSocket, room) async {
-      peerSocketInit(room, peerSocket);
-      print('onTimeout!');
-    };
-    _dataChannelController!.onMessage = (dataChannelMessage) async {
-      print('dataChannelMessage');
-      // if (dataChannelMessage.text.startsWith('pattern')
-      if (!dataChannelMessage.isBinary) {
-        print('on message ${dataChannelMessage.text}');
-        if (dataChannelMessage.text == _rtcCmdReady) {
-          // var body = dataChannelMessage.text.split(_rtcCmdReady)[1];
-          // if (tabIndex.value != int.parse(body)) return; // 공유 타입이 같을때 작동
-          // 데이터 채널 준비
-          _sendProfile();
-        } else if (dataChannelMessage.text.startsWith(_rtcCmdProfile)) {
-          // 상태방 프로필 정보 수신.
-          print(dataChannelMessage.text);
-          var body = dataChannelMessage.text.split(_rtcCmdProfile)[1];
-          _receiveData = jsonDecode(body);
-          // _messageTypeChange(MessageType.SUCCESS);
-          _asyncConfirmDialog(Get.context!,
-              name: _receiveData!['name'], phone: _receiveData!['phone']);
-        } else if (dataChannelMessage.text == _rtcCmdConfirm) {
-          otherDataConfirm(true);
-          _dataConfirmCheck();
-        } else if (dataChannelMessage.text.startsWith(_rtcCmdCancel)) {
-          // _messageTypeChange(MessageType.ABLE);
-          otherDataConfirm(false);
-        } else if (dataChannelMessage.text.startsWith(_rtcCmdProfileImage)) {
-          var datas = dataChannelMessage.text.split(':');
-          await _receiveFileInfo(
-              datas[2], int.parse(datas[3]), RtcFileType.Profile,
-              sender: datas[1]);
-        } else if (dataChannelMessage.text.startsWith(_rtcCmdSendFile)) {
-          var body = dataChannelMessage.text.split(_rtcCmdSendFile)[1];
-          var data = json.decode(body);
-          await _receiveFileInfo(
-              data['filename'], data['size'], RtcFileType.Attach);
-        } else if (dataChannelMessage.text.startsWith(_rtcCmdContact)) {
-          // if (!isChip[2].value) return; // 상대방이 데이터를 보냈더라도 내 설정이 꺼져있으면 작동안함.TODO
-          var body = dataChannelMessage.text.split(_rtcCmdContact)[1];
-          var data = json.decode(body);
-          print(data);
-          await _receiveContact(data);
-        }
-      } else {
-        if (fileInfo == null) return;
-        print('get binary! ${dataChannelMessage.binary.length}');
-        fileInfo!.bytesBuilder.add(dataChannelMessage.binary);
-        if (fileInfo!.size == fileInfo!.bytesBuilder.length) {
-          // await _fileCompleteSave();
-        }
-      }
-    };
+    // _dataChannelController!.onTimeout = (peerSocket, room) async {
+    //   peerSocketInit(room, peerSocket);
+    //   print('onTimeout!');
+    // };
+    // _dataChannelController!.onMessage = (dataChannelMessage) async {
+    //   print('dataChannelMessage');
+    //   // if (dataChannelMessage.text.startsWith('pattern')
+    //   if (!dataChannelMessage.isBinary) {
+    //     print('on message ${dataChannelMessage.text}');
+    //     if (dataChannelMessage.text == _rtcCmdReady) {
+    //       // var body = dataChannelMessage.text.split(_rtcCmdReady)[1];
+    //       // if (tabIndex.value != int.parse(body)) return; // 공유 타입이 같을때 작동
+    //       // 데이터 채널 준비
+    //       _sendProfile();
+    //     } else if (dataChannelMessage.text.startsWith(_rtcCmdProfile)) {
+    //       // 상태방 프로필 정보 수신.
+    //       print(dataChannelMessage.text);
+    //       var body = dataChannelMessage.text.split(_rtcCmdProfile)[1];
+    //       _receiveData = jsonDecode(body);
+    //       // _messageTypeChange(MessageType.SUCCESS);
+    //       _asyncConfirmDialog(Get.context!,
+    //           name: _receiveData!['name'], phone: _receiveData!['phone']);
+    //     } else if (dataChannelMessage.text == _rtcCmdConfirm) {
+    //       otherDataConfirm(true);
+    //       _dataConfirmCheck();
+    //     } else if (dataChannelMessage.text.startsWith(_rtcCmdCancel)) {
+    //       // _messageTypeChange(MessageType.ABLE);
+    //       otherDataConfirm(false);
+    //     } else if (dataChannelMessage.text.startsWith(_rtcCmdProfileImage)) {
+    //       var datas = dataChannelMessage.text.split(':');
+    //       await _receiveFileInfo(
+    //           datas[2], int.parse(datas[3]), RtcFileType.Profile,
+    //           sender: datas[1]);
+    //     } else if (dataChannelMessage.text.startsWith(_rtcCmdSendFile)) {
+    //       var body = dataChannelMessage.text.split(_rtcCmdSendFile)[1];
+    //       var data = json.decode(body);
+    //       await _receiveFileInfo(
+    //           data['filename'], data['size'], RtcFileType.Attach);
+    //     } else if (dataChannelMessage.text.startsWith(_rtcCmdContact)) {
+    //       // if (!isChip[2].value) return; // 상대방이 데이터를 보냈더라도 내 설정이 꺼져있으면 작동안함.TODO
+    //       var body = dataChannelMessage.text.split(_rtcCmdContact)[1];
+    //       var data = json.decode(body);
+    //       print(data);
+    //       await _receiveContact(data);
+    //     }
+    //   } else {
+    //     if (fileInfo == null) return;
+    //     print('get binary! ${dataChannelMessage.binary.length}');
+    //     fileInfo!.bytesBuilder.add(dataChannelMessage.binary);
+    //     if (fileInfo!.size == fileInfo!.bytesBuilder.length) {
+    //       // await _fileCompleteSave();
+    //     }
+    //   }
+    // };
 
     // Future.delayed(Duration(seconds: 5), () {
     //   print(
@@ -507,8 +502,7 @@ class MainController extends GetxController {
   void _dataConfirmCheck({IO.Socket? peerSocket, String? room}) async {
 
 
-  print(
-        '_dataConfirmCheck : ${myDataConfirm.value}, ${otherDataConfirm.value},${otherCompanyInfo}');
+  print('_dataConfirmCheck : ${myDataConfirm.value}, ${otherDataConfirm.value},${otherCompanyInfo}');
     if (myDataConfirm.value && otherDataConfirm.value) {
 
       if (!otherCompanyInfo.value) {

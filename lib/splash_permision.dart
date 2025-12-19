@@ -166,41 +166,44 @@ class _SplashPermissionState extends State<SplashPermission> {
             margin: EdgeInsets.all(0),
             color: Colors.white,
             child:
+              SafeArea(
+                top: false,
+                child: Align(
+                  alignment: FractionalOffset.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 20.h),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 120.h,
+                      child: TextButton(
+                        child: Text(
+                          '확인',
+                          style: TextStyle(
+                            fontSize: 60.sp,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).primaryColor, // foreground
+                        ),
+                        onPressed: () async {
+                          final granted = await requestPermission();
+                          if (!granted) {
+                            return;
+                          }
 
-               Align(
-                alignment: FractionalOffset.bottomCenter,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 120.h,
-                  child: TextButton(
-                    child: Text(
-                      '확인',
-                      style: TextStyle(
-                        fontSize: 60.sp,
+                          final prefs = await SharedPreferences.getInstance();
+                          final isT = prefs.getBool('isTutorial') ?? false;
+                          print('asdfasdfasdf:${isT}');
+                          // 처음 실행 한 유저
+                          if (prefs.getBool('isTutorial') ?? false) {
+                            Get.offAllNamed('/YouAndIMain');
+                          } else {
+                            Get.offAllNamed('/Tutorial');
+                          }
+                        },
                       ),
                     ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).primaryColor, // foreground
-                    ),
-                    onPressed: () async {
-                      final granted = await requestPermission();
-                      if (!granted) {
-                        return;
-                      }
 
-                      final prefs = await SharedPreferences.getInstance();
-                      final isT = prefs.getBool('isTutorial') ?? false;
-                      print('asdfasdfasdf:${isT}');
-                      // 처음 실행 한 유저
-                      if (prefs.getBool('isTutorial') ?? false) {
-                        Get.offAllNamed('/YouAndIMain');
-                      } else {
-
-                        Get.offAllNamed('/Tutorial');
-                      }
-
-
-                    },
                   ),
 
               ),

@@ -11,7 +11,8 @@ import 'package:graphview/GraphView.dart' as Grap;
 class NetworkPictureController extends GetxController {
   var list = [];
   var nodeMap = {};
-   TransformationController transformationController = TransformationController();
+  TransformationController transformationController = TransformationController();
+
   @override
   void onInit() {
     super.onInit();
@@ -19,7 +20,7 @@ class NetworkPictureController extends GetxController {
     //     withThumbnails: false);
   }
 
-  void initPosition(String key) async {
+  void initPosition(String key, {int retries = 0}) async {
     Future.delayed(const Duration(seconds: 1), () async {
 
       print('node0x:${nodeMap[key] }');
@@ -28,17 +29,21 @@ class NetworkPictureController extends GetxController {
         return;
       }
 
-      final Grap.Node firstNode = nodeMap[key];
-      final position = firstNode.position;
+      final Grap.Node? firstNode = nodeMap[key] as Grap.Node?;
+      final position = firstNode?.position;
 
-      print('node0x:${firstNode.position.dx }');
-
-      print('node0x:${firstNode.position.dy }');
-
-      if (position.dx.isNaN || position.dy.isNaN ||
-          position.dx.isInfinite || position.dy.isInfinite) {
+      if (position == null ||
+          !position.dx.isFinite ||
+          !position.dy.isFinite) {
+        if (retries < 3) {
+          initPosition(key, retries: retries + 1);
+        }
         return;
       }
+
+      print('node0x:${position.dx}');
+
+      print('node0x:${position.dx}');
 
       final context = Get.context;
 
@@ -47,6 +52,10 @@ class NetworkPictureController extends GetxController {
       }
 
       final double width = MediaQuery.of(context).size.width / 2;
+
+      if (!width.isFinite || width <= 0) {
+        return;
+      }
 
       transformationController.value = Matrix4.identity()
         ..translate(-position.dx + width, 0.0);

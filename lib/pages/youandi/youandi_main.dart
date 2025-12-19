@@ -136,12 +136,17 @@ class _YouAndIMainState extends State<YouAndIMain> {
           ),
         ],
       ),
-      body: Center(
-        child:
-        Obx((){
-          return _widgetOptions.elementAt(controller.mainTabIndex.value);
-        }
-      ),)
+      body: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: kBottomNavigationBarHeight),
+          child: Center(
+            child: Obx(() {
+              return _widgetOptions.elementAt(controller.mainTabIndex.value);
+            }),
+          ),
+        ),
+      ),
     );
   }
 
