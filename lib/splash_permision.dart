@@ -29,19 +29,6 @@ class _SplashPermissionState extends State<SplashPermission> {
     final storageGranted = await _storagePermision();
     final locationGranted = await _locationPermision();
 
-    // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainRoot()));
-    //await _storagePermision();
-    //await _contactPermision();
-    //await _locationPermision();
-
-    // final prefs = await SharedPreferences.getInstance();
-    // if (!(prefs.getBool('isFirst') ?? false)) {
-    //   Get.offAllNamed('/Tutorial');
-    // }else{
-    //   Get.offAllNamed('/YouAndI');
-    //
-    // }
-
     return contactGranted && storageGranted && locationGranted;
   }
 
@@ -100,37 +87,41 @@ class _SplashPermissionState extends State<SplashPermission> {
   }
 
   Future<bool> _storagePermision() async {
-    // 기본 저장소 권한 요청
-    var status = await Permission.storage.request();
-
-    if (status.isGranted) {
-      return true;
-    }
 
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
       final int androidVersion = androidInfo.version.sdkInt ?? 0;
 
       if (androidVersion >= 33) {
-        if (await Permission.photos.status.isDenied ||
-            await Permission.videos.status.isDenied) {
-          Map<Permission, PermissionStatus> statuses = await [
-            Permission.photos,
-            Permission.videos,
-          ].request();
-          if (statuses[Permission.photos] == PermissionStatus.granted ||
-              statuses[Permission.videos] == PermissionStatus.granted) {
-          } else {
-            PermissionStatus representativeStatus  = await Permission.photos.request();
-            return _handleDenied(representativeStatus , '저장소 권한을 허용해주세요.1');
-          }
-        } else {
+        final photoStatus = await Permission.photos.request();
+        final videoStatus = await Permission.videos.request();
+
+        if (photoStatus.isGranted || videoStatus.isGranted) {
           return true;
         }
+        // pick one to show appropriate guidance
+        return _handleDenied(
+            photoStatus.isDenied || photoStatus.isPermanentlyDenied
+                ? photoStatus
+                : videoStatus,
+            '저장소 권한을 허용해주세요.');
       }
+
+      final status = await Permission.storage.request();
+      if (status.isGranted) {
+        return true;
+      }
+
+      return _handleDenied(status, '저장소 권한을 허용해주세요.');
     }
 
-    return _handleDenied(status, '저장소 권한을 허용해주세요.2');
+    // Other platforms keep previous storage flow
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      return true;
+    }
+
+    return _handleDenied(status, '저장소 권한을 허용해주세요.');
   }
 
   bool _handleDenied(PermissionStatus status, String message) {
