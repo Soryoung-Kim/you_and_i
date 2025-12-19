@@ -543,6 +543,22 @@ class MainController extends GetxController {
     // Iterable<Contact> contacts =
     //     await ContactsService.getContacts(withThumbnails: false);
     print("*********************4******************************");
+
+    if (contacts == null) {
+      final hasPermission = await FlutterContacts.requestPermission();
+      if (!hasPermission) {
+        Logger().w('Contact permission not granted; skipping contact sync');
+        return;
+      }
+
+      contacts = await FlutterContacts.getContacts(withProperties: true);
+    }
+
+    if (contacts == null) {
+      Logger().w('Contacts unavailable; skipping contact sync');
+      return;
+    }
+
     var list = contacts!
         .map((e) => {
               'name': e.displayName,
