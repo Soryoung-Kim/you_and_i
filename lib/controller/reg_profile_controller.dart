@@ -40,7 +40,7 @@ class RegProfileController extends GetxController {
   RxString tel = ''.obs;
   RxString email = ''.obs;
   RxString homepage = ''.obs;
-  RxString addressSearch =''.obs;
+  RxString addressSearch = ''.obs;
   RxString address = ''.obs;
   RxString address2 = ''.obs;
   RxString memo = ''.obs;
@@ -53,7 +53,6 @@ class RegProfileController extends GetxController {
   final MyInfoDBController controller = Get.find<MyInfoDBController>();
 
 
-
   @override
   void onInit() {
     super.onInit();
@@ -62,9 +61,9 @@ class RegProfileController extends GetxController {
     print('position : ${name}');
   }
 
-  void firstCheck() async{
+  void firstCheck() async {
     Future.delayed(Duration(milliseconds: 100), () async {
-      if(background.value==''){
+      if (background.value == '') {
         background('d0d0d0');
       }
       final prefs = await SharedPreferences.getInstance();
@@ -72,33 +71,29 @@ class RegProfileController extends GetxController {
       print('asdfasdfasdf:${isT}');
       // 처음 실행 한 유저
       if (!(prefs.getBool('isTutorial') ?? false)) {
-
         isFirst(true);
         title('프로필을 등록하세요.');
       } else {
         isFirst(false);
         title('프로필 수정');
         nameController.text = controller.name.value;
-        phoneController.text =controller.phone.value;
-        companyController.text =controller.company.value;
-        positionController.text =controller.position.value;
-        telController.text =controller.tel.value;
-        emailController.text =controller.email.value;
-        homepageController.text =controller.homepage.value;
+        phoneController.text = controller.phone.value;
+        companyController.text = controller.company.value;
+        positionController.text = controller.position.value;
+        telController.text = controller.tel.value;
+        emailController.text = controller.email.value;
+        homepageController.text = controller.homepage.value;
 
-        addressController.text =controller.address.value;
-        addressController2.text =controller.address2.value;
-        background.value= controller.background.value;
+        addressController.text = controller.address.value;
+        addressController2.text = controller.address2.value;
+        background.value = controller.background.value;
         picture.value = controller.picture.value;
 
         // Get.offAllNamed('/YouAndIMain');
       }
-
     });
-
-
-
   }
+
   void onClose() {
     nameController.dispose();
     phoneController.dispose();
@@ -133,8 +128,9 @@ class RegProfileController extends GetxController {
       return Future.error('Camera permissions are denied ');
     }
   }
+
   void openProfileImageSelect(ImageSource source) async {
-    await _storagePermision();
+    //await _storagePermision();
 
     if (source == ImageSource.camera) {
       await _cameraPermission();
@@ -174,7 +170,6 @@ class RegProfileController extends GetxController {
       // print('save file exists: $exists');
       picture(saveFile.path);
       await controller.updateProfileImage(saveFile.path);
-
     } catch (e) {
       print(e);
     }
@@ -228,47 +223,102 @@ class RegProfileController extends GetxController {
         phone: phoneController.text,
         tel: telController.text,
         email: emailController.text,
-        homepage : homepageController.text,
+        homepage: homepageController.text,
         address: addressController.text,
         address2: addressController2.text,
         memo: memoController.text);
 
     await controller.insertMyInfo(fido);
   }
-  Color fromHex()
-  {
+
+  Color fromHex() {
     print(background.value.length);
     final buffer = StringBuffer();
-    if (background.value.length == 6 || background.value.length == 7) buffer.write('ff');
+    if (background.value.length == 6 || background.value.length == 7) buffer
+        .write('ff');
     buffer.write(background.value.replaceFirst('0xff', ''));
     return Color(int.parse(buffer.toString(), radix: 16));
-
-
   }
 
 
-  void changeColorPress(color){
+  void changeColorPress(color) {
+    print('changeColorPress');
 
+    final palette = [
+      'd0d0d0',
+      '676767',
+      '383838',
+      'd5e5f2',
+      '168edb',
+      '005d9c',
+      'd7dcf5',
+      '4c5dd3',
+      '202e7f',
+      'e5dcfa',
+      '643db0',
+      '412979',
+      'ebd7f0',
+      '943fab',
+      '632275',
+      'f2dfe5',
+      'f2dfe5',
+      'd7457b'
+    ];
 
-    var converted = color.toString().replaceAll('0xff', '');
-    converted = converted.replaceAll('(', '');
-    converted = converted.replaceAll(')', '');
+    Color? resolvedColor;
 
-    converted = converted.replaceAll('Color', '');
+    if (color is Color) {
+      resolvedColor = color;
+    } else {
+      var converted = color.toString().replaceAll('0xff', '');
+      converted = converted.replaceAll('(', '');
+      converted = converted.replaceAll(')', '');
+      converted = converted.replaceAll('Color', '');
+      converted = converted.toLowerCase();
 
-    print(converted);
-
-    var colorList = ['d0d0d0','676767','383838','d5e5f2','168edb','005d9c','d7dcf5','4c5dd3','202e7f',
-                     'e5dcfa','643db0','412979','ebd7f0','943fab','632275','f2dfe5','f2dfe5','d7457b'];
-    for(String color in colorList){
-      if(color == converted){
-        background(converted);
+      if (converted.length == 6) {
+        resolvedColor = Color(int.parse('0xff$converted'));
       }
     }
-//
 
+    if (resolvedColor == null) {
+      return;
+    }
 
+    final normalizedHex = resolvedColor.value.toRadixString(16).substring(2);
+    if (palette.contains(normalizedHex)) {
+      background(normalizedHex);
+      return;
+    }
 
+    String? nearestHex;
+    int? nearestDistance;
+
+    for (final hex in palette) {
+      final paletteColor = Color(int.parse('0xff$hex'));
+      final distance = _colorDistance(resolvedColor!, paletteColor);
+
+      if (nearestDistance == null || distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestHex = hex;
+      }
+
+      if (nearestHex != null) {
+        background(nearestHex);
+      }
+    }
+  }
+
+  int _colorDistance(Color a, Color b) {
+    final rDiff = (a.r * 255.0).round().clamp(0, 255) -
+        (b.r * 255.0).round().clamp(0, 255);
+    ;
+    final gDiff = (a.g * 255.0).round().clamp(0, 255) -
+        (b.g * 255.0).round().clamp(0, 255);
+    final bDiff = (a.b * 255.0).round().clamp(0, 255) -
+        (b.b * 255.0).round().clamp(0, 255);
+
+    return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
   }
 
 }

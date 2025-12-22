@@ -72,7 +72,7 @@ class _RegProfileState extends State<RegProfile> {
               child:
 
               Image(
-                color: Colors.black.withOpacity(0),
+                color: Colors.black.withValues(alpha: 0),
                 image: AssetImage( 'assets/images/img_profile_bg.png'),
                  width: double.infinity,
                 fit: BoxFit.fill,
@@ -124,12 +124,22 @@ class _RegProfileState extends State<RegProfile> {
                 return CupertinoAlertDialog(
                   // title: Text("Delete File"),
                   content: Form(
-                    child: PixelColorPicker(
-                      child:Image.asset('assets/images/img_bg_color.png'),
-                      onChanged: (color){
-                        profileController.changeColorPress(color);
-
-                      },
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.6,
+                          minHeight: 320.h,
+                        ),
+                        child: SingleChildScrollView(
+                          child: PixelColorPicker(
+                            child: Image.asset(
+                              'assets/images/img_bg_color.png',
+                              fit: BoxFit.contain,
+                            ),
+                            onChanged: (color){
+                              profileController.changeColorPress(color);
+                            },
+                          ),
+                        ),
                     ),
                   ),
                   actions: [

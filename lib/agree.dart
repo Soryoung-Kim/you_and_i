@@ -42,37 +42,33 @@ class _AgreeState extends State<Agree> {
           Container(
             margin: const EdgeInsets.all(0),
             color: Colors.white,
-            child:
-
-               Align(
+            child:Align(
                 alignment: FractionalOffset.bottomCenter,
                 child: SizedBox(
                   width: double.infinity,
                   height: 120.h,
-                  child: TextButton(
-                    child: Text(
-                      '동의하고 시작하기',
-                      style: TextStyle(
-                        fontSize: 60.sp,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 20.h),
+                    child :TextButton(
+                      child: Text(
+                        '동의하고 시작하기',
+                        style: TextStyle(
+                          fontSize: 60.sp,
+                        ),
                       ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).primaryColor, // foreground
+                      ),
+                      onPressed: () async {
+                        await requestAgree();
+
+                        final prefs = await SharedPreferences.getInstance();
+                        prefs.setBool('isAgree', true);
+
+                        Get.offAllNamed('/RegProfile');
+                      },
                     ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).primaryColor, // foreground
-                    ),
-                    onPressed: () async {
-                      await requestAgree();
-
-
-
-                      final prefs = await SharedPreferences.getInstance();
-                      prefs.setBool('isAgree', true);
-
-                      Get.offAllNamed('/RegProfile');
-
-
-                    },
-                  ),
-
+                  )
               ),
             ),
             // decoration: BoxDecoration(color: Colors.black,),

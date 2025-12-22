@@ -78,12 +78,15 @@ class _TutorialState extends State<Tutorial> with TickerProviderStateMixin {
           ),
           shape: StadiumBorder(),
         ),
-        child: Text('서비스 시작하기',
-        style:  TextStyle(
-          color: Colors.white,
-          // fontWeight: FontWeight.bold,
-          fontSize: 50.sp,
-        ),),);
+        child: Text(
+          '서비스 시작하기',
+          style:  TextStyle(
+            color: Colors.white,
+            // fontWeight: FontWeight.bold,
+            fontSize: 50.sp,
+          ),
+        ),
+    );
   }
   @override
   Widget build(BuildContext context) {

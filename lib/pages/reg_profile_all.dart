@@ -253,11 +253,22 @@ class _RegProfileAllState extends State<RegProfileAll> {
                 return CupertinoAlertDialog(
                   // title: Text("Delete File"),
                   content: Form(
-                    child: PixelColorPicker(
-                      child: Image.asset('assets/images/img_bg_color.png'),
-                      onChanged: (color) {
-                        profileController.changeColorPress(color);
-                      },
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.6,
+                        minHeight: 320.h,
+                      ),
+                      child: SingleChildScrollView(
+                        child: PixelColorPicker(
+                          child: Image.asset(
+                            'assets/images/img_bg_color.png',
+                            fit: BoxFit.contain,
+                          ),
+                          onChanged: (color) {
+                            profileController.changeColorPress(color);
+                          },
+                        ),
+                      ),
                     ),
                   ),
                   actions: [
@@ -474,8 +485,10 @@ class _RegProfileAllState extends State<RegProfileAll> {
                                                 shape: BoxShape.circle,
                                                 image: new DecorationImage(
                                                     fit: BoxFit.fill,
-                                                    image: AssetImage(
-                                                        'assets/images/img_profile_user.png')))),
+                                                    image: AssetImage('assets/images/img_profile_user.png')
+                                                )
+                                            )
+                                        ),
                                         // Icon(Icons.account_box_outlined , size: 70,color: Colors.white,),
                                         alignment: Alignment.center,
                                       ),
@@ -494,8 +507,7 @@ class _RegProfileAllState extends State<RegProfileAll> {
                                 }
                               }),
                               Image(
-                                image: AssetImage(
-                                    'assets/images/img_profile_text.png'),
+                                image: AssetImage('assets/images/img_profile_text.png'),
                                 width: 400.w,
                                 fit: BoxFit.fill,
                               ),
