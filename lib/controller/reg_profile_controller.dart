@@ -207,8 +207,14 @@ class RegProfileController extends GetxController {
   }
 
 
-  void changeColorPress(color) {
+  void changeColorPress(Color? color) {
     print('changeColorPress');
+
+    if (color == null) {
+      return;
+    }
+
+    final targetColor = color;
 
     final palette = [
       'd0d0d0',
@@ -231,22 +237,7 @@ class RegProfileController extends GetxController {
       'd7457b'
     ];
 
-    Color? resolvedColor;
-
-    if (color is Color) {
-      resolvedColor = color;
-    } else {
-      // String으로 들어온 경우 처리 (0xff... 또는 #... 등)
-      var hex = color.replaceAll('0xff', '').replaceAll('#', '').toLowerCase();
-      if (hex.length == 6) {
-        resolvedColor = Color(int.parse('0xff$hex'));
-      }
-    }
-    if (resolvedColor == null) return;
-
-    print('resolvedColor');
-    print(resolvedColor);
-    final normalizedHex = _rgbHex(resolvedColor);
+    final normalizedHex = targetColor.value.toRadixString(16).padLeft(8, '0').substring(2);
 
     // 1. 팔레트에 정확히 일치하는 색이 있는지 확인
     if (palette.contains(normalizedHex)) {
@@ -256,20 +247,20 @@ class RegProfileController extends GetxController {
 
     // 2. 가장 가까운 색상 찾기
     String? nearestHex;
-    int nearestDistance = 2147483647; // Max Int
+    int? nearestDistance;
 
     for (final hex in palette) {
       final paletteColor = Color(int.parse('0xff$hex'));
-      final distance = _colorDistance(resolvedColor, paletteColor);
+      final distance = _colorDistance(targetColor, paletteColor);
 
-      if (distance < nearestDistance) {
+      if (nearestDistance == null || distance < nearestDistance) {
         nearestDistance = distance;
         nearestHex = hex;
       }
     }
 
     if (nearestHex != null) {
-      background.value = nearestHex; // 루프 밖에서 최종 결정된 색상 반영
+      background(nearestHex);
       print('Selected Nearest Hex: $nearestHex');
     }
   }
@@ -280,12 +271,6 @@ class RegProfileController extends GetxController {
     final bDiff = a.blue - b.blue;
 
     return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
-  }
-
-  String _rgbHex(Color color) {
-    return color.red.toRadixString(16).padLeft(2, '0') +
-           color.green.toRadixString(16).padLeft(2, '0') +
-           color.blue.toRadixString(16).padLeft(2, '0');
   }
 
 }

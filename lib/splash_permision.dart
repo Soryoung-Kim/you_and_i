@@ -183,6 +183,7 @@ class _SplashPermissionState extends State<SplashPermission> {
                           }
 
                           final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('permissionCompleted', true);
                           final isT = prefs.getBool('isTutorial') ?? false;
                           print('asdfasdfasdf:${isT}');
                           // 처음 실행 한 유저

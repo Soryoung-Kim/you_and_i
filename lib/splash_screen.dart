@@ -34,6 +34,26 @@ class _SplashScreenState extends State<SplashScreen> {
       await helper.open();
       // Get.put(Tutorial());
 
+      final prefs = await SharedPreferences.getInstance();
+      final hasCompletedPermissions =
+          prefs.getBool('permissionCompleted') ?? false;
+
+      if (hasCompletedPermissions) {
+        final isAgree = prefs.getBool('isAgree') ?? false;
+        final isTutorial = prefs.getBool('isTutorial') ?? false;
+
+        if (isTutorial) {
+          if (isAgree) {
+            Get.offAllNamed('/YouAndIMain');
+          } else {
+            Get.offAllNamed('/Agree');
+          }
+        } else {
+          Get.offAllNamed('/Tutorial');
+        }
+        return;
+      }
+
       var status = await Permission.storage.status;
       // var status2 = await Permission.location.status;
       var status3 = await Permission.contacts.status;

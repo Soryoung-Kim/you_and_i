@@ -262,24 +262,6 @@ class _RegProfileAllState extends State<RegProfileAll> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Obx(() => Container(
-                              width: 120.w,
-                              height: 120.w,
-                              margin: EdgeInsets.only(bottom: 20.h),
-                              decoration: BoxDecoration(
-                                color: Color(
-                                  int.parse(
-                                    'FF${profileController.background.value}',
-                                    radix: 16,
-                                  ),
-                                ),
-                                border: Border.all(
-                                  color: Colors.grey,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                            )),
                             PixelColorPicker(
                               child: Image.asset(
                                 'assets/images/img_bg_color.png',

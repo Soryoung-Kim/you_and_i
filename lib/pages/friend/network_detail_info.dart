@@ -126,12 +126,24 @@ class _NetworkDetailInfoState extends State<NetworkDetailInfo> {
 
                             ),
                             child: IconButton(
-                              icon: Image.asset('assets/images/ic_call.png', color: Colors.white,
+                              constraints: BoxConstraints(
+                                minWidth: 64.w,
+                                minHeight: 64.w,
                               ),
-                              iconSize: 100.w,
+                              padding: EdgeInsets.all(2.w),
+                              icon: SizedBox(
+                                width: 42.w,
+                                height: 42.w,
+                                child: Image.asset(
+                                  'assets/images/ic_call.png',
+                                  color: Colors.white,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                               onPressed: () {
                                 // controller.memoAlert(index);
-                                launch('tel://${one.phone}');
+                                final String phoneNumber = 'tel:${one.phone}';
+                                launchUrl(Uri.parse(phoneNumber));
                               },
                             ),
                           ),
