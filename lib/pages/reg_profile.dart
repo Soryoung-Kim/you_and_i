@@ -124,22 +124,45 @@ class _RegProfileState extends State<RegProfile> {
                 return CupertinoAlertDialog(
                   // title: Text("Delete File"),
                   content: Form(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.6,
-                          minHeight: 320.h,
-                        ),
-                        child: SingleChildScrollView(
-                          child: PixelColorPicker(
-                            child: Image.asset(
-                              'assets/images/img_bg_color.png',
-                              fit: BoxFit.contain,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.6,
+                        minHeight: 320.h,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Obx(() => Container(
+                              width: 120.w,
+                              height: 100.w,
+                              margin: EdgeInsets.only(bottom: 20.h),
+                              decoration: BoxDecoration(
+                                color: Color(
+                                  int.parse(
+                                    'FF${profileController.background.value}',
+                                    radix: 16,
+                                  ),
+                                ),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            )),
+                            PixelColorPicker(
+                              child: Image.asset(
+                                'assets/images/img_bg_color.png',
+                                fit: BoxFit.contain,
+                              ),
+                              onChanged: (color) {
+                                profileController.changeColorPress(color);
+                              },
                             ),
-                            onChanged: (color){
-                              profileController.changeColorPress(color);
-                            },
-                          ),
+                          ],
                         ),
+                      ),
                     ),
                   ),
                   actions: [

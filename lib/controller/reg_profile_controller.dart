@@ -173,43 +173,6 @@ class RegProfileController extends GetxController {
     } catch (e) {
       print(e);
     }
-
-    // var result = await FilePicker.platform
-    //     .pickFiles(type: FileType.image, allowMultiple: false);
-    // if (result != null && result.count > 0) {
-    //   _progressDialog.showProgressDialog(Get.context);
-    //   var file = result.files[0];
-    //   // print('select file : ${file.path}');
-    //   var image = Image.decodeImage(Io.File(file.path).readAsBytesSync());
-    //   // print('select file size : ${image.getBytes().length}');
-
-    //   var resizeImage = Image.copyResize(image, width: 500);
-    //   Io.Directory saveDir;
-    //   if (GetPlatform.isAndroid) {
-    //     saveDir = await getExternalStorageDirectory();
-    //   } else {
-    //     saveDir = await getApplicationDocumentsDirectory();
-    //   }
-    //   var saveFile = Io.File('${saveDir.path}/${file.name}');
-
-    //   List<int> binary;
-    //   if (file.extension == 'png') {
-    //     binary = Image.encodePng(resizeImage);
-    //   } else if (file.extension == 'jpg' || file.extension == 'jpeg') {
-    //     binary = Image.encodeJpg(resizeImage);
-    //   }
-    //   saveFile.writeAsBytes(binary);
-
-    //   // print('save file: ${saveFile.path}');
-    //   // print('save file size: ${image.getBytes().length}');
-    //   // var exists = await saveFile.exists();
-    //   // print('save file exists: $exists');
-
-    //   await controller.updateProfileImage(saveFile.path);
-    //   picture(saveFile.path);
-
-    //   _progressDialog.dismissProgressDialog(Get.context);
-    // }
   }
 
   Future<void> dbInsert() async {
@@ -232,12 +195,15 @@ class RegProfileController extends GetxController {
   }
 
   Color fromHex() {
-    print(background.value.length);
-    final buffer = StringBuffer();
-    if (background.value.length == 6 || background.value.length == 7) buffer
-        .write('ff');
-    buffer.write(background.value.replaceFirst('0xff', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
+    String hex = background.value.replaceAll('#', '').replaceAll('0xff', '');
+
+    if (hex.length == 6) {
+      return Color(int.parse('FF$hex', radix: 16));
+    } else if (hex.length == 8) {
+      return Color(int.parse(hex, radix: 16));
+    }
+
+    return Colors.grey; // 기본값
   }
 
 
@@ -270,55 +236,56 @@ class RegProfileController extends GetxController {
     if (color is Color) {
       resolvedColor = color;
     } else {
-      var converted = color.toString().replaceAll('0xff', '');
-      converted = converted.replaceAll('(', '');
-      converted = converted.replaceAll(')', '');
-      converted = converted.replaceAll('Color', '');
-      converted = converted.toLowerCase();
-
-      if (converted.length == 6) {
-        resolvedColor = Color(int.parse('0xff$converted'));
+      // String으로 들어온 경우 처리 (0xff... 또는 #... 등)
+      var hex = color.replaceAll('0xff', '').replaceAll('#', '').toLowerCase();
+      if (hex.length == 6) {
+        resolvedColor = Color(int.parse('0xff$hex'));
       }
     }
+    if (resolvedColor == null) return;
 
-    if (resolvedColor == null) {
-      return;
-    }
+    print('resolvedColor');
+    print(resolvedColor);
+    final normalizedHex = _rgbHex(resolvedColor);
 
-    final normalizedHex = resolvedColor.value.toRadixString(16).substring(2);
+    // 1. 팔레트에 정확히 일치하는 색이 있는지 확인
     if (palette.contains(normalizedHex)) {
-      background(normalizedHex);
+      background.value = normalizedHex; // GetX 변수 업데이트
       return;
     }
 
+    // 2. 가장 가까운 색상 찾기
     String? nearestHex;
-    int? nearestDistance;
+    int nearestDistance = 2147483647; // Max Int
 
     for (final hex in palette) {
       final paletteColor = Color(int.parse('0xff$hex'));
-      final distance = _colorDistance(resolvedColor!, paletteColor);
+      final distance = _colorDistance(resolvedColor, paletteColor);
 
-      if (nearestDistance == null || distance < nearestDistance) {
+      if (distance < nearestDistance) {
         nearestDistance = distance;
         nearestHex = hex;
       }
+    }
 
-      if (nearestHex != null) {
-        background(nearestHex);
-      }
+    if (nearestHex != null) {
+      background.value = nearestHex; // 루프 밖에서 최종 결정된 색상 반영
+      print('Selected Nearest Hex: $nearestHex');
     }
   }
 
   int _colorDistance(Color a, Color b) {
-    final rDiff = (a.r * 255.0).round().clamp(0, 255) -
-        (b.r * 255.0).round().clamp(0, 255);
-    ;
-    final gDiff = (a.g * 255.0).round().clamp(0, 255) -
-        (b.g * 255.0).round().clamp(0, 255);
-    final bDiff = (a.b * 255.0).round().clamp(0, 255) -
-        (b.b * 255.0).round().clamp(0, 255);
+    final rDiff = a.red - b.red;
+    final gDiff = a.green - b.green;
+    final bDiff = a.blue - b.blue;
 
     return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
+  }
+
+  String _rgbHex(Color color) {
+    return color.red.toRadixString(16).padLeft(2, '0') +
+           color.green.toRadixString(16).padLeft(2, '0') +
+           color.blue.toRadixString(16).padLeft(2, '0');
   }
 
 }
