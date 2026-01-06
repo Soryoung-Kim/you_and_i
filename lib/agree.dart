@@ -36,20 +36,25 @@ class _AgreeState extends State<Agree> {
 
   @override
   Widget build(BuildContext context) {
+    final double bottomInset = MediaQuery.of(context).padding.bottom;
     return Scaffold(
       body: Stack(
         children: [
           Container(
             margin: const EdgeInsets.all(0),
             color: Colors.white,
-            child:Align(
-                alignment: FractionalOffset.bottomCenter,
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: SafeArea(
+                top: false,
                 child: SizedBox(
                   width: double.infinity,
                   height: 120.h,
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: 20.h),
-                    child :TextButton(
+                    padding: EdgeInsets.only(
+                      bottom: bottomInset - 55.h,
+                    ),
+                    child: TextButton(
                       child: Text(
                         '동의하고 시작하기',
                         style: TextStyle(
@@ -68,13 +73,14 @@ class _AgreeState extends State<Agree> {
                         Get.offAllNamed('/RegProfile');
                       },
                     ),
-                  )
+                  ),
+                ),
               ),
             ),
             // decoration: BoxDecoration(color: Colors.black,),
           ),
           Column(
-            children: [
+             children: [
               const SizedBox(
                 height: 80,
               ),

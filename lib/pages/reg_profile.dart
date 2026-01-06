@@ -189,7 +189,9 @@ class _RegProfileState extends State<RegProfile> {
         textStyle: TextStyle(
           fontSize: 60.sp,
         ),
-        padding: EdgeInsets.all(0),
+        padding: EdgeInsets.only(
+          bottom: 25.h,
+        ),
         side: BorderSide(
           color: Theme.of(context).primaryColor,
           width: 2,
