@@ -65,15 +65,6 @@ class _SplashPermissionState extends State<SplashPermission> {
       return _handleDenied(status, '연락처 접근 권한을 허용해주세요.');
   }
 
-  Future<bool> _askPermissions(String routeName) async {
-    PermissionStatus permissionStatus = await _getContactPermission();
-    if (permissionStatus == PermissionStatus.granted) {
-      return true;
-    } else {
-      return _handleDenied(permissionStatus, '연락처 접근 권한을 허용해주세요.');
-    }
-  }
-
   Future<PermissionStatus> _getContactPermission() async {
     PermissionStatus permission = await Permission.contacts.status;
     if (permission != PermissionStatus.granted &&
@@ -89,7 +80,7 @@ class _SplashPermissionState extends State<SplashPermission> {
 
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
-      final int androidVersion = androidInfo.version.sdkInt ?? 0;
+      final int androidVersion = androidInfo.version.sdkInt ?? 1;
 
       if (androidVersion >= 33) {
         final photoStatus = await Permission.photos.request();
