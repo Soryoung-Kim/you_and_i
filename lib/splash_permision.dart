@@ -58,7 +58,6 @@ class _SplashPermissionState extends State<SplashPermission> {
 
   Future<bool> _contactPermision() async {
     var status = await Permission.contacts.request();
-
     if (status.isGranted) {
         return true;
     }
