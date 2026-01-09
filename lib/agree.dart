@@ -52,7 +52,7 @@ class _AgreeState extends State<Agree> {
                   height: 120.h,
                   child: Padding(
                     padding: EdgeInsets.only(
-                      bottom: bottomInset - 55.h,
+                      bottom: 55.h - bottomInset,
                     ),
                     child: TextButton(
                       child: Text(

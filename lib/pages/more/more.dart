@@ -21,6 +21,7 @@ class More extends StatelessWidget {
       'FAQ',
       '환경설정',
       '약관안내',
+      '개인정보처리방침',
       '버전정보  v${mainController.version}',
     ];
     List<String> imageList = [
@@ -29,6 +30,7 @@ class More extends StatelessWidget {
       'assets/images/ic_more_02.png',
 
       'assets/images/ic_more_04.png',
+      'assets/images/ic_more_06.png',
       'assets/images/ic_more_06.png',
       'assets/images/ic_more_05.png',
     ];
@@ -56,6 +58,11 @@ class More extends StatelessWidget {
             else if(index == 4){
               Get.toNamed('/MoreWebview',
                   arguments: ['약관안내','https://woori42.net/policy.html']
+              );
+            }
+            else if(index == 5){
+              Get.toNamed('/MoreWebview',
+                  arguments: ['개인정보처리방침','https://woori42.net/privacy_policy.html']
               );
             }
 

@@ -53,7 +53,7 @@ class _SplashPermissionState extends State<SplashPermission> {
             permission == LocationPermission.whileInUse;
       }
 
-      return _handleDenied(status, '위치 접근 권한을 허용해주세요.');
+      return _handleDenied(status, '현재 위치 기반으로 주변 회원을 매칭하고, 맞춤 정보를 제공하기 위해 위치 권한이 필요합니다.');
     }
 
   Future<bool> _contactPermision() async {
@@ -62,7 +62,7 @@ class _SplashPermissionState extends State<SplashPermission> {
         return true;
     }
 
-      return _handleDenied(status, '연락처 접근 권한을 허용해주세요.');
+      return _handleDenied(status, '주소록에 있는 지인을 쉽게 찾고 초대할 수 있도록 주소록 권한을 요청합니다.');
   }
 
   Future<PermissionStatus> _getContactPermission() async {
@@ -257,7 +257,7 @@ class _SplashPermissionState extends State<SplashPermission> {
                 subtitle: Align(
                   alignment: Alignment(-1.0, 0),
                   child: Text(
-                    '현 위치로 매칭',
+                    '현재 위치 기반으로 주변 회원을 매칭을 위해 위치 권한이 필요합니다.',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.grey,
@@ -292,7 +292,7 @@ class _SplashPermissionState extends State<SplashPermission> {
                 subtitle: Align(
                   alignment: Alignment(-1.0, 0),
                   child: Text(
-                    '주소록 매칭 및 교환',
+                    '주소록에 있는 지인을 쉽게 찾고 초대할 수 있도록 주소록 권한을 요청합니다.',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.grey,
@@ -327,7 +327,7 @@ class _SplashPermissionState extends State<SplashPermission> {
                 subtitle: Align(
                   alignment: Alignment(-1.0, 0),
                   child: Text(
-                    '로컬 데이터 저장',
+                    '프로필 사진 및 정보를 저장하고 불러오기 위해 저장소 접근 권한이 필요합니다.',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.grey,
@@ -369,7 +369,7 @@ class _SplashPermissionState extends State<SplashPermission> {
                 title: Align(
                   alignment: Alignment(-1.0, 0),
                   child: Text(
-                    '카메라',
+                    '갤러리 및 카메라',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.black,
@@ -380,7 +380,7 @@ class _SplashPermissionState extends State<SplashPermission> {
                 subtitle: Align(
                   alignment: Alignment(-1.0, 0),
                   child: Text(
-                    '프로필 사진 촬영',
+                    '프로필 사진을 등록/변경하기 위해 갤러리 및 카메라 접근 권한이 필요합니다.',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.grey,
